@@ -1,7 +1,11 @@
 package hello;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.sql.SQLException;
+import java.util.EmptyStackException;
 
 import org.junit.jupiter.api.Test;
 import org.mariadb.jdbc.*;
@@ -26,5 +30,9 @@ public class MariaJdbcTest {
         assertFalse(Configuration.parse("jdbc:mariadb://localhost/db").useServerPrepStmts());
         assertTrue(Configuration.parse("jdbc:mariadb://localhost/db?useServerPrepStmts=").useServerPrepStmts());
         assertTrue(Configuration.parse("jdbc:mariadb://localhost/db?useServerPrepStmts").useServerPrepStmts());
+        assertFalse(Configuration.parse("jdbc:mariadb://localhost/db?useServerPrepStmts=false").useServerPrepStmts());
+
+        assertThrows(SQLException.class, () -> Configuration
+                .parse("jdbc:mariadb://localhost/db?useServerPrepStmts=not_a_bool").useServerPrepStmts());
     }
 }
