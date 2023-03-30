@@ -1,5 +1,6 @@
 package hello;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -46,5 +47,13 @@ public class MariaJdbcTest {
         // something to do with the jdbc framework using the first registered driver that returns
         // a non-null connection?
         assertNull(Configuration.parse("jdbc:mysql://localhost/db?"));
+    }
+
+    @Test
+    public void acceptsMultipleProperties() throws Exception {
+        Configuration config = Configuration.parse("jdbc:mariadb://127.0.0.1?allowLocalInfile=true&useServerPrepStmts&timezone=london");
+        assertEquals(true, config.allowLocalInfile());
+        assertEquals(true, config.useServerPrepStmts());
+        assertEquals("london", config.timezone());
     }
 }
