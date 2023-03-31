@@ -65,4 +65,36 @@ public class MariaJdbcTest {
         assertEquals(HaMode.LOADBALANCE, Configuration.parse("jdbc:mariadb:loadbalance//localhost").haMode());
         assertEquals(HaMode.SEQUENTIAL, Configuration.parse("jdbc:mariadb:sequential//localhost").haMode());
     }
+
+    @Test
+    public void acceptsIpv6AddressInHostDescription() throws Exception {
+        Configuration config = Configuration.parse("jdbc:mariadb://[2001:0660:7401:0200:0000:0000:0edf:bdd7]:3306");
+        assertEquals("2001:0660:7401:0200:0000:0000:0edf:bdd7", config.addresses().get(0).host);
+    }
+
+    @Test
+    public void acceptsAdressEqualsFormsInHostDescription() throws Exception {
+        Configuration config = Configuration.parse("jdbc:mariadb://address=(host=hostname)(port=1234)(type=slave)");
+        HostAddress addr = config.addresses().get(0);
+        assertEquals("hostname", addr.host);
+        assertEquals(1234, addr.port);
+        assertFalse(addr.primary);
+    }
+
+    @Test
+    public void acceptsMultipleHostDescriptions() throws Exception {
+        Configuration config = Configuration.parse("jdbc:mariadb://host1,host2:1234,address=(host=host3)(type=replica)");
+        
+        assertEquals("host1", config.addresses().get(0).host);
+        assertEquals(3306, config.addresses().get(0).port);
+        assertTrue(config.addresses().get(0).primary);
+
+        assertEquals("host2", config.addresses().get(1).host);
+        assertEquals(1234, config.addresses().get(1).port);
+        assertTrue(config.addresses().get(1).primary);
+
+        assertEquals("host3", config.addresses().get(2).host);
+        assertEquals(3306, config.addresses().get(2).port);
+        assertFalse(config.addresses().get(2).primary);
+    }
 }
