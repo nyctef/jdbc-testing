@@ -12,6 +12,7 @@ import java.util.EmptyStackException;
 
 import org.junit.jupiter.api.Test;
 import org.mariadb.jdbc.*;
+import org.mariadb.jdbc.export.HaMode;
 
 public class MariaJdbcTest {
 
@@ -55,5 +56,13 @@ public class MariaJdbcTest {
         assertEquals(true, config.allowLocalInfile());
         assertEquals(true, config.useServerPrepStmts());
         assertEquals("london", config.timezone());
+    }
+
+    @Test
+    public void acceptsFailoverOrLoadBalancingMode() throws Exception {
+        assertEquals(HaMode.NONE, Configuration.parse("jdbc:mariadb://localhost").haMode());
+        assertEquals(HaMode.REPLICATION, Configuration.parse("jdbc:mariadb:replication//localhost").haMode());
+        assertEquals(HaMode.LOADBALANCE, Configuration.parse("jdbc:mariadb:loadbalance//localhost").haMode());
+        assertEquals(HaMode.SEQUENTIAL, Configuration.parse("jdbc:mariadb:sequential//localhost").haMode());
     }
 }
