@@ -41,15 +41,16 @@ public class MariaJdbcTest {
     public void acceptsUrlsWithMysqlSubprotocolIffExtraPropertySpecified() throws Exception {
         assertNotNull(Configuration.parse("jdbc:mysql://localhost/db?permitMysqlScheme"));
         assertNotNull(Configuration.parse("jdbc:mysql://localhost/db?permitMysqlScheme=true"));
-        // not 100% sure why we get a null rather than an exception in this case - seems like
-        // something to do with the jdbc framework using the first registered driver that returns
-        // a non-null connection?
+        // not 100% sure why we get a null rather than an exception in this case - seems
+        // like something to do with the jdbc framework using the first registered driver
+        // that returns a non-null connection?
         assertNull(Configuration.parse("jdbc:mysql://localhost/db?"));
     }
 
     @Test
     public void acceptsMultipleProperties() throws Exception {
-        Configuration config = Configuration.parse("jdbc:mariadb://127.0.0.1?allowLocalInfile=true&useServerPrepStmts&timezone=london");
+        Configuration config = Configuration
+                .parse("jdbc:mariadb://127.0.0.1?allowLocalInfile=true&useServerPrepStmts&timezone=london");
         assertEquals(true, config.allowLocalInfile());
         assertEquals(true, config.useServerPrepStmts());
         assertEquals("london", config.timezone());
@@ -80,8 +81,9 @@ public class MariaJdbcTest {
 
     @Test
     public void acceptsMultipleHostDescriptions() throws Exception {
-        Configuration config = Configuration.parse("jdbc:mariadb://host1,host2:1234,address=(host=host3)(type=replica)");
-        
+        Configuration config = Configuration
+                .parse("jdbc:mariadb://host1,host2:1234,address=(host=host3)(type=replica)");
+
         assertEquals("host1", config.addresses().get(0).host);
         assertEquals(3306, config.addresses().get(0).port);
         assertTrue(config.addresses().get(0).primary);
