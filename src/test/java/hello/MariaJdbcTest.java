@@ -6,10 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.sql.SQLException;
-import java.util.EmptyStackException;
-
 import org.junit.jupiter.api.Test;
 import org.mariadb.jdbc.*;
 import org.mariadb.jdbc.export.HaMode;

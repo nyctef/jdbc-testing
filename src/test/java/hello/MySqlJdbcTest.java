@@ -1,10 +1,6 @@
 package hello;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.sql.DriverPropertyInfo;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
 import com.mysql.cj.jdbc.Driver;
 
