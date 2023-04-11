@@ -119,4 +119,25 @@ public class MariaJdbcTest {
         Configuration config = Configuration.parse("jdbc:mariadb://localhost/db?password=password%20with%20ampersand%20%26");
         assertEquals("password%20with%20ampersand%20%26", config.password());
     }
+
+    @Test
+    public void acceptsEmptyDatabase() throws Exception {
+        Configuration config = Configuration.parse("jdbc:mariadb://localhost/?sslmode=verify-full");
+        // empty is treated as not specified in this case
+        assertNull(config.database());
+    }
+
+    @Test
+    public void acceptsMissingDatabase() throws Exception {
+        Configuration config = Configuration.parse("jdbc:mariadb://localhost?");
+        // the properties are also optional
+        assertNull(config.database());
+    }
+
+    @Test
+    public void acceptsMissingDatabaseAndProperties() throws Exception {
+        Configuration config = Configuration.parse("jdbc:mariadb://localhost/?");
+        // the properties are also optional
+        assertNull(config.database());
+    }
 }
