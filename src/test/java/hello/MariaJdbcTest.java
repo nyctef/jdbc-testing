@@ -80,6 +80,22 @@ public class MariaJdbcTest {
     }
 
     @Test
+    public void addressEqualsFormCanBeOrderedArbitrarily() throws Exception {
+        Configuration config = Configuration.parse("jdbc:mariadb://address=(type=replica)(port=1234)(host=hostname)");
+        HostAddress addr = config.addresses().get(0);
+        assertEquals("hostname", addr.host);
+        assertEquals(1234, addr.port);
+        assertFalse(addr.primary);
+    }
+
+    @Test
+    public void addressEqualsHostIsNotRequired() throws Exception {
+        Configuration config = Configuration.parse("jdbc:mariadb://address=");
+        HostAddress addr = config.addresses().get(0);
+        assertNull(addr.host);
+    }
+
+    @Test
     public void acceptsMultipleHostDescriptions() throws Exception {
         Configuration config = Configuration
                 .parse("jdbc:mariadb://host1,host2:1234,address=(host=host3)(type=replica)");
@@ -95,5 +111,12 @@ public class MariaJdbcTest {
         assertEquals("host3", config.addresses().get(2).host);
         assertEquals(3306, config.addresses().get(2).port);
         assertFalse(config.addresses().get(2).primary);
+    }
+
+    @Test
+    public void doesNotSupportUrlEscaping() throws Exception {
+        // as far as we can tell the mariadb driver doesn't support any kind of escaping
+        Configuration config = Configuration.parse("jdbc:mariadb://localhost/db?password=password%20with%20ampersand%20%26");
+        assertEquals("password%20with%20ampersand%20%26", config.password());
     }
 }
