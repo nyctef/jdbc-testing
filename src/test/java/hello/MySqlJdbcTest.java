@@ -41,7 +41,6 @@ public class MySqlJdbcTest {
         ex.getMessage());
   }
 
-  @Test
   @ParameterizedTest
   @ValueSource(strings = { "=asdf", "=", "", "=1", "=0"})
   public void boolValuesThrowErrorIfInvalid(String paranoidValue) throws Exception {
@@ -52,7 +51,6 @@ public class MySqlJdbcTest {
         ex.getMessage().contains("The connection property 'paranoid' acceptable values are: 'TRUE', 'FALSE', 'YES' or 'NO'. The value '"));
   }
 
-  @Test
   @ParameterizedTest
   @ValueSource(strings = { "=true", "=TRUE", "=false", "=yes", "=no"})
   public void boolValuesTriesToConnectIfValid(String paranoidValue) throws Exception {
