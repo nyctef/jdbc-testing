@@ -41,6 +41,15 @@ public class MySqlJdbcTest {
         ex.getMessage());
   }
 
+  @Test
+  public void sslModeValuesAreCaseInsensitive() throws Exception {
+    Exception ex = assertThrows(
+        Exception.class,
+        () -> new Driver().connect("jdbc:mysql://blah?sslMode=disabled", null));
+    assertTrue(
+        ex.getMessage().contains("Communications link failure"));
+  }
+
   @ParameterizedTest
   @ValueSource(strings = { "=asdf", "=", "", "=1", "=0"})
   public void boolValuesThrowErrorIfInvalid(String paranoidValue) throws Exception {
