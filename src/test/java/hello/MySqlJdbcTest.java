@@ -1,6 +1,10 @@
 package hello;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.sql.Connection;
+import java.sql.Statement;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -68,5 +72,17 @@ public class MySqlJdbcTest {
         () -> new Driver().connect("jdbc:mysql://blah?paranoid" + paranoidValue, null));
     assertTrue(
         ex.getMessage().contains("Communications link failure"));
+  }
+
+  @Test
+  public void timeoutsCanCancelSleep() throws Exception {
+    Connection connection = new Driver().connect("jdbc:mysql://localhost", new java.util.Properties() {{
+      setProperty("user", "root");
+      setProperty("password", "password");
+    }});
+    Statement stmt = connection.createStatement();
+    // stmt.setQueryTimeout(11);
+    stmt.setQueryTimeout(1);
+    stmt.execute("SELECT SLEEP(10)");
   }
 }
