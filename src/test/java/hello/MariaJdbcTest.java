@@ -1,5 +1,6 @@
 package hello;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -42,7 +43,8 @@ public class MariaJdbcTest {
         assertNotNull(Configuration.parse("jdbc:mysql://localhost/db?permitMysqlScheme"));
         assertNotNull(Configuration.parse("jdbc:mysql://localhost/db?permitMysqlScheme=true"));
         // not 100% sure why we get a null rather than an exception in this case - seems
-        // like something to do with the jdbc framework using the first registered driver
+        // like something to do with the jdbc framework using the first registered
+        // driver
         // that returns a non-null connection?
         assertNull(Configuration.parse("jdbc:mysql://localhost/db?"));
     }
@@ -116,7 +118,8 @@ public class MariaJdbcTest {
     @Test
     public void doesNotSupportUrlEscaping() throws Exception {
         // as far as we can tell the mariadb driver doesn't support any kind of escaping
-        Configuration config = Configuration.parse("jdbc:mariadb://localhost/db?password=password%20with%20ampersand%20%26");
+        Configuration config = Configuration
+                .parse("jdbc:mariadb://localhost/db?password=password%20with%20ampersand%20%26");
         assertEquals("password%20with%20ampersand%20%26", config.password());
     }
 
@@ -139,5 +142,15 @@ public class MariaJdbcTest {
         Configuration config = Configuration.parse("jdbc:mariadb://localhost/?");
         // the properties are also optional
         assertNull(config.database());
+    }
+
+    @Test
+    public void rejectsIncorrectValuesForRecognisedProperties() throws Exception {
+        assertThrows(SQLException.class, () -> Configuration.parse("jdbc:mariadb://localhost/?sslmode=fasdfasdf"));
+    }
+
+    @Test
+    public void ignoresUnrecognisedProperties() throws Exception {
+        assertDoesNotThrow(() -> Configuration.parse("jdbc:mariadb://localhost/?foo=fasdfasdf"));
     }
 }

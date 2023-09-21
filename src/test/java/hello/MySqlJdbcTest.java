@@ -55,17 +55,29 @@ public class MySqlJdbcTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = { "=asdf", "=", "", "=1", "=0"})
+  @ValueSource(strings = { "=asdf", "=", "", "=1", "=0" })
   public void boolValuesThrowErrorIfInvalid(String paranoidValue) throws Exception {
     Exception ex = assertThrows(
         Exception.class,
         () -> new Driver().connect("jdbc:mysql://blah?paranoid" + paranoidValue, null));
     assertTrue(
-        ex.getMessage().contains("The connection property 'paranoid' acceptable values are: 'TRUE', 'FALSE', 'YES' or 'NO'. The value '"));
+        ex.getMessage().contains(
+            "The connection property 'paranoid' acceptable values are: 'TRUE', 'FALSE', 'YES' or 'NO'. The value '"));
+  }
+
+  @Test
+  public void doesNotThrowIfUnrecognisedPropertyDetected() throws Exception {
+    Exception ex = assertThrows(
+        Exception.class,
+        () -> new com.mysql.cj.jdbc.Driver()
+            .connect("jdbc:mysql://xxx/yyy?usePipelineAuth=false&useBatchMultiSend=false&foo=bar", null));
+    assertTrue(
+        ex.getMessage().contains(
+            "The driver has not received any packets from the server"));
   }
 
   @ParameterizedTest
-  @ValueSource(strings = { "=true", "=TRUE", "=false", "=yes", "=no"})
+  @ValueSource(strings = { "=true", "=TRUE", "=false", "=yes", "=no" })
   public void boolValuesTriesToConnectIfValid(String paranoidValue) throws Exception {
     Exception ex = assertThrows(
         Exception.class,
@@ -76,10 +88,12 @@ public class MySqlJdbcTest {
 
   @Test
   public void timeoutsCanCancelSleep() throws Exception {
-    Connection connection = new Driver().connect("jdbc:mysql://localhost", new java.util.Properties() {{
-      setProperty("user", "root");
-      setProperty("password", "password");
-    }});
+    Connection connection = new Driver().connect("jdbc:mysql://localhost", new java.util.Properties() {
+      {
+        setProperty("user", "root");
+        setProperty("password", "password");
+      }
+    });
     Statement stmt = connection.createStatement();
     // stmt.setQueryTimeout(11);
     stmt.setQueryTimeout(1);
